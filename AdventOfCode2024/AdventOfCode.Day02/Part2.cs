@@ -16,11 +16,10 @@ public static class Part2
         return result;
     }
 
-    private static bool IsValid(List<long> nums)
+    private static bool IsValid(List<long> nums, bool allowErrors = true)
     {
         long? previous = null;
         Direction? direction = null;
-        var allowErrors = true;
 
         foreach (var current in nums)
         {
@@ -35,18 +34,32 @@ public static class Part2
             var diff = direction == Direction.Decreasing ? previous.Value - current : current - previous.Value;
             if (diff is < 1 or > 3)
             {
-                if (!allowErrors)
-                {
-                    return false;
-                }
-
-                allowErrors = false;
+                return CheckPartialValid(nums, allowErrors);
             }
 
             previous = current;
         }
 
         return true;
+    }
+
+    private static bool CheckPartialValid(List<long> nums, bool allowErrors)
+    {
+        if (!allowErrors)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < nums.Count; i++)
+        {
+            var x = nums.Where((_, i1) => i1 != i).ToList();
+            if (IsValid(x, false))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private enum Direction
