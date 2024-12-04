@@ -20,7 +20,7 @@ public static class Part2
         {
             for (var j = 0; j < matrix[i].Count; j++)
             {
-                if (matrix[i][j] is 'M' or 'S' && GetXmas(matrix, i, j))
+                if (matrix[i][j] is 'M' or 'S' && IsXmas(matrix, i, j))
                 {
                     result += 1;
                 }
@@ -30,7 +30,7 @@ public static class Part2
         return result;
     }
 
-    private static bool GetXmas(List<List<char>> matrix, int y, int x)
+    private static bool IsXmas(List<List<char>> matrix, int y, int x)
     {
         var leftTopM = matrix[y][x] == 'M';
         var leftTopS = matrix[y][x] == 'S';
