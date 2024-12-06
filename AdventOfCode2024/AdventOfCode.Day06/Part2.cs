@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode.Day06;
+﻿using System.Diagnostics;
+
+namespace AdventOfCode.Day06;
 
 public static class Part2
 {
@@ -37,32 +39,55 @@ public static class Part2
 
     public static long Solve(string input)
     {
+        var sw = new Stopwatch();
+        sw.Start();
         var matrix = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
             .Select(q => q.ToCharArray().ToList())
             .ToList();
         var (x, y, direction) = FindStart(matrix);
         matrix[y][x] = '.';
+        var init = GetResult(matrix, x, y, direction);
         
         var loopCount = 0;
-        for (var i = 0; i < matrix.Count; i++)
+        foreach (var (replaceX, replaceY) in init)
         {
-            for (var j = 0; j < matrix[i].Count; j++)
+            matrix[replaceY][replaceX] = '#';
+            if (IsLoop(matrix, x, y, direction))
             {
-                if (matrix[i][j] == '#' || y == i && x == j)
-                {
-                    continue;
-                }
-        
-                matrix[i][j] = '#';
-                if (IsLoop(matrix, x, y, direction))
-                {
-                    loopCount += 1;
-                }
-                matrix[i][j] = '.';
+                loopCount += 1;
             }
+            matrix[replaceY][replaceX] = '.';
         }
         
+        sw.Stop();
+        Console.WriteLine($"Elapsed: {sw.ElapsedMilliseconds/1000.0}s");
         return loopCount;
+    }
+
+    private static HashSet<(int, int)> GetResult(List<List<char>> matrix, int x, int y, DirectionEnum direction)
+    {
+        var visited = new HashSet<(int, int)> { (x, y) };
+
+        do
+        {
+            var (xOffset, yOffset) = Directions[direction];
+            var newDirection = GetNewDirection(matrix, x + xOffset, y + yOffset, direction);
+            if (newDirection == DirectionEnum.Finished)
+            {
+                return visited;
+            }
+
+            if (newDirection != direction)
+            {
+                direction = newDirection;
+                continue;
+            }
+
+            x += Directions[direction].x;
+            y += Directions[direction].y;
+
+            visited.Add((x, y));
+        } while (true);
     }
 
     private static (int x, int y, DirectionEnum direction) FindStart(List<List<char>> matrix)
