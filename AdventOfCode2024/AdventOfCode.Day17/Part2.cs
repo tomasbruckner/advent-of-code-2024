@@ -17,39 +17,52 @@ public static class Part2
     public static long Solve(string input)
     {
         var program = GetProgram(input);
-        var newA = 42;
-        for (var i = 0; i < program.instructions.Count; i++)
-        {
-            while (true)
-            {
-                try
-                {
-                    program.registers.a = newA;
-                    var expected = program.instructions.Take(i + 1).ToList();
-                    if (Execute(program,  expected))
-                    {
-                        Console.WriteLine($"Found {i} - {newA} - {string.Join(',', expected)}");
-                        break;
-                    }
-
-                    newA++;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
+        var newA = Solve(program, 0, program.instructions);
 
         return newA;
     }
 
+    private static long Solve(
+        ((long a, long b, long c) registers, List<long> instructions) program, 
+        long baseNum,
+        List<long> expected)
+    {
+        if (expected.Count == 0)
+        {
+            return baseNum;
+        }
+
+        baseNum *= 8;
+
+        for (var i = 0; i < 8; i++)
+        {
+            try
+            {
+                program.registers.a = baseNum + i;
+                if (Execute(program, expected.Last()))
+                {
+                    var newExpected = expected.SkipLast(1).ToList();
+                    var valid = Solve(program, baseNum + i, newExpected);
+                    if (valid != -1)
+                    {
+                        return valid;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        return -1;
+    }
+
     private static bool Execute(
         ((long a, long b, long c) registers, List<long> instructions) program,
-        List<long> expected
+        long expected
     )
     {
-        var outputs = new List<long>();
         var (a, b, c) = program.registers;
         var instructions = program.instructions;
 
@@ -99,13 +112,7 @@ public static class Part2
                 case InstructionEnum.Out:
                 {
                     var val = GetValue((a, b, c), instructions[i + 1]) % 8;
-                    outputs.Add(val);
-                    if (expected.Count == outputs.Count)
-                    {
-                        return expected.SequenceEqual(outputs);
-                    }
-                    i++;
-                    break;
+                    return val == expected;
                 }
                 case InstructionEnum.Bdv:
                 {
