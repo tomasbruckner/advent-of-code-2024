@@ -11,7 +11,7 @@ public static partial class Part1
         Xor,
     }
 
-    private static Dictionary<string, OperationEnum> _opMap = new()
+    private static readonly Dictionary<string, OperationEnum> OpMap = new()
     {
         ["OR"] = OperationEnum.Or,
         ["AND"] = OperationEnum.And,
@@ -43,7 +43,7 @@ public static partial class Part1
             }
 
             var parts = InstructionsRegex().Match(line);
-            var op = _opMap[parts.Groups[2].Value];
+            var op = OpMap[parts.Groups[2].Value];
             instructions.Add((parts.Groups[1].Value, op, parts.Groups[3].Value, parts.Groups[4].Value));
         }
 

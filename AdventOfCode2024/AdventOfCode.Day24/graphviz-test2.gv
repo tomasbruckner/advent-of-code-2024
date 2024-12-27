@@ -1,0 +1,22 @@
+graph G {
+    fontname = "Helvetica,Arial,sans-serif";
+    node [fontname = "Helvetica,Arial,sans-serif";];
+    edge [fontname = "Helvetica,Arial,sans-serif";];    x00 -- AND0;
+    y00 -- AND0;
+    AND0 -- z05;
+    x01 -- AND1;
+    y01 -- AND1;
+    AND1 -- z02;
+    x02 -- AND2;
+    y02 -- AND2;
+    AND2 -- z01;
+    x03 -- AND3;
+    y03 -- AND3;
+    AND3 -- z03;
+    x04 -- AND4;
+    y04 -- AND4;
+    AND4 -- z04;
+    x05 -- AND5;
+    y05 -- AND5;
+    AND5 -- z00;
+}
